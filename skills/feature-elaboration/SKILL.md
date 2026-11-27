@@ -119,7 +119,7 @@ Finish with a short message to the requester:
 
 - A link to the draft PR and the spec.
 - The number of failure states covered, and the open questions with their owners.
-- A reminder that an engineer will build the real feature from the spec, and the prototype PR will close without merging.
+- A reminder that an engineer will build the real feature from the spec (see the `prototype-to-prod` skill), and the prototype PR will close without merging.
 
 ## What you never do
 
