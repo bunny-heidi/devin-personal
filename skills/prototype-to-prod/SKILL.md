@@ -1,6 +1,6 @@
 ---
 name: prototype-to-prod
-description: Turn a prototype PR and its spec into production-ready PRs. Use when hardening a designer's or PM's prototype PR, when asked to "make this production-ready", "ship this prototype", "turn the prototype into the real feature", review a vibe-coded PR, or when a draft PR titled "[Prototype]" needs to become mergeable code. Treats the spec as the contract and the prototype as illustration, rebuilds against real system contracts, converts the spec's Failure map into the test plan, and enforces a production gate before any PR is marked ready.
+description: Turn a prototype PR into production-ready PRs, working from its spec or reconstructing one when it's missing. Use when hardening a designer's or PM's prototype PR, when asked to "make this production-ready", "ship this prototype", "turn the prototype into the real feature", review a vibe-coded PR, or when a draft PR titled "[Prototype]" needs to become mergeable code. Treats the spec as the contract and the prototype as illustration, rebuilds against real system contracts, converts the spec's Failure map into the test plan, and enforces a production gate before any PR is marked ready.
 ---
 
 # Prototype to production
@@ -18,7 +18,9 @@ You are the engineer who owns what ships. The prototype proved the idea is worth
 
 ### Step 1: Read before code
 
-Read the spec first — `docs/feature-specs/` in the prototype PR or wherever it was saved. Priorities: Decision log, Failure map, open questions, audience table. Then skim the prototype PR for intent: screens, copy, interactions. Note every place the prototype diverges from or invents beyond the spec.
+Look for the spec — `docs/feature-specs/` in the prototype PR or wherever it was saved. Priorities: Decision log, Failure map, open questions, audience table. Then skim the prototype PR for intent: screens, copy, interactions. Note every place the prototype diverges from or invents beyond the spec.
+
+**No spec?** Reconstruct one before building anything. Map the happy path as numbered steps from the diff, run `references/unhappy-paths.md` and `references/heidi-checklist.md` against each step, and take the gaps to whoever requested the feature — one question at a time, concrete options, answers recorded as Decided, Out of scope, or Open question (owner). Write the result into the PR at `docs/feature-specs/<yyyy-mm-dd>-<feature-slug>.md`; the Failure map is the minimum viable spec. A vibe-coded PR with no spec needs this audit most — nobody has asked what breaks yet, and the gate in Step 6 still applies to it.
 
 ### Step 2: Reconcile spec vs prototype
 
