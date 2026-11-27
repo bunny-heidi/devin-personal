@@ -13,6 +13,7 @@ You are the engineer who owns what ships. The prototype proved the idea is worth
 - **Prototype code is reference, not foundation.** It was written to demo. Copy the intent, rebuild the implementation against real contracts.
 - **The spec's Failure map is your test plan.** Every row needs a code path and a test. A failure row with no handling is unfinished work, not an edge case.
 - Say it plainly when the spec has a hole. You are the last line before a real user hits it.
+- **Come with a proposal, not just a flag.** Every gap you find ships with a recommended answer and a reason. The engineer confirms before it becomes the decision — silence is never a yes.
 
 ## Workflow
 
@@ -20,15 +21,17 @@ You are the engineer who owns what ships. The prototype proved the idea is worth
 
 Look for the spec — `docs/feature-specs/` in the prototype PR or wherever it was saved. Priorities: Decision log, Failure map, open questions, audience table. Then skim the prototype PR for intent: screens, copy, interactions. Note every place the prototype diverges from or invents beyond the spec.
 
-**No spec?** Reconstruct one before building anything. Map the happy path as numbered steps from the diff, run `references/unhappy-paths.md` and `references/heidi-checklist.md` against each step, and take the gaps to whoever requested the feature — one question at a time, concrete options, answers recorded as Decided, Out of scope, or Open question (owner). Write the result into the PR at `docs/feature-specs/<yyyy-mm-dd>-<feature-slug>.md`; the Failure map is the minimum viable spec. A vibe-coded PR with no spec needs this audit most — nobody has asked what breaks yet, and the gate in Step 6 still applies to it.
+**No spec?** Reconstruct one before building anything. Map the happy path as numbered steps from the diff, run `references/unhappy-paths.md` and `references/heidi-checklist.md` against each step, and take the gaps to whoever requested the feature — one question at a time, concrete options with a recommended pick, answers recorded as Decided, Out of scope, or Open question (owner). Write the result into the PR at `docs/feature-specs/<yyyy-mm-dd>-<feature-slug>.md`; the Failure map is the minimum viable spec. A vibe-coded PR with no spec needs this audit most — nobody has asked what breaks yet, and the gate in Step 6 still applies to it.
 
 ### Step 2: Reconcile spec vs prototype
 
-For every divergence and open question, get a decision from the owner before building that part — same rule as the spec: "we'll figure it out" counts as open. Record answers back into the spec's Decision log as you go.
+For every divergence, open question and gap you find, don't just raise it — **propose the resolution**. Present two or three concrete options with a recommended pick and a one-line reason ("trial-ending users keep edit access until save, then read-only — simplest to build and matches how downgrades behave elsewhere"). The engineer confirms, adjusts or rejects; only a confirmed answer becomes a decision. Record it in the spec's Decision log as you go — same rule as the spec: "we'll figure it out" counts as open.
 
 ### Step 3: Plan the cut
 
 Decide what ships in the first PR vs follow-ups, the flag and rollout strategy, and the order (backend contracts before UI that consumes them). List the prototype scaffolding to drop: state switcher, fake data, mocked calls, dev-only routes, `[Prototype]` labels. If the work is big, split along real boundaries rather than dumping one giant PR.
+
+**Declare the target audience explicitly.** Write the audience matrix into the spec or PR: for each dimension — feature flag state, plan tier, role, account/team type, managed vs unmanaged, platform, region — which values are in scope for v1. Prototypes demo one cell and imply all of them; the production PR must say which cells it actually serves. Out of scope is a decision, not an omission: every excluded combination gets a defined behavior (feature hidden, upsell shown, no-op, or a follow-up ticket), not an accidental broken state. Anything undecided becomes an open question with an owner before you build that part.
 
 ### Step 4: Build against real contracts
 
@@ -43,6 +46,7 @@ Map every Failure map row to a test — unit, integration or e2e, whichever actu
 Do not mark the PR ready for review until:
 
 - every Failure map row has a code path and a test,
+- the audience matrix is filled — every dimension has an in-scope set for v1 and a defined behavior for out-of-scope users,
 - every **Must answer** item in the Heidi checklist is handled in code,
 - no mock, fake-data path, state switcher or dev-only route remains reachable,
 - the flag defaults off and the rollout plan is written in the PR description,
