@@ -9,26 +9,21 @@ Use this in Step 4. Each item either ships handled or becomes a named follow-up 
 - Idempotency: retries and double-clicks can't create duplicates or double-charge.
 - Partial failure: if the operation touches multiple things, define what "half done" means and how the UI shows it.
 
-## 2. Who — the audience matrix
+## 2. Who — the scope of release
 
-Fill the matrix before building, using `references/heidi-checklist.md` §2–§5 for the full dimension detail. Each row is a dimension, each value either in scope (handled) or out of scope (defined behavior — hidden, upsell, no-op, or follow-up ticket). The dangerous bugs live in the *combinations*, so check at least the boundary cells: flag on × lowest in-scope tier, managed user × restricted role, trial ending mid-flow, oldest supported desktop build × feature on.
+Answer it in a couple of sentences, not a matrix: **who does v1 ship to, and what does everyone else see?** It looks different for every feature. Example:
 
-| Dimension | Values to consider | Typical v1 answer |
-| --- | --- | --- |
-| Feature flag | on, off, flag never evaluated (old client) | flag off → prior behavior, no residual UI |
-| Plan tier (`SubscriptionTier`) | Free, Pro, Pro Plus, Clinician variants, Evidence, Enterprise | paid-only? what Free sees must be decided |
-| Billing state | trialing, trial just ended, `PAST_DUE`, `CANCELED` | mid-flow transition handled, not stranded |
-| Role | Admin, Clinician, Management, Support, View-Only | server-side ability check, not hidden UI |
-| Account/team type | solo, team member/owner/admin, org global admin, managed/enterprise | managed users can't self-serve — what's their path? |
-| Entitlement (`ENTITLEMENT`) | Evidence, Coder seat, Translator, Connectors, none | who grants it: org, team, or user |
-| Platform | web, desktop (Mac/Win), Mac App Store build, managed desktop (3-month lag), on-prem, iOS/Android | each in scope or explicitly excluded with behavior |
-| Region | AU, US, UK, EU, CA, CH, enterprise `-AZ1` | per-region differences or in-scope list |
-| Clinical scope | touches clinical content (notes, transcripts, templates, EHR sync) or not | if yes → med-device review, per `heidi-checklist.md` §4 |
+> "v1 ships to PLG clinician and practice tiers, flag-gated, web and desktop, AU and US first. Free tier sees the upsell. Managed and on-prem are out — feature hidden, follow-up ticket for the managed path. Mobile is a separate PR."
 
-- Permissions: the right ability/role checks server-side, not just hidden UI (see `src/helpers/casl/ability.ts`).
-- Upgrade paths only where a user can actually buy: not Mac App Store (`isAppleCompliantBuild()`), not managed Enterprise — their "buy" is contact-admin/contact-sales.
-- Existing users: people mid-flow or with old data on ship day get a defined behavior, not a crash or a blank state.
-- The classic misses: View-Only user reaches the feature via deep link; Support role sees admin-only UI; managed Enterprise member hits an upgrade wall they can't act on; trial expires between screen one and screen two; on-prem or managed-desktop users on an old build hit UI for a flag that can't evaluate.
+Check the statement covers:
+
+- the motion + tier: PLG (free / clinician / practice / legacy), SLG, `is_managed`
+- role, platform, region, flag state where they matter
+- for every out-of-scope segment, a defined behavior — hidden, upsell (only where they can actually buy), no-op, or a named follow-up
+
+Classic misses: a managed user hits an upgrade wall they can't act on; a free-tier deep-link lands in a paid feature; trial expires mid-flow; a legacy-tier user the spec forgot exists; an old managed-desktop build gets UI for a flag it can't evaluate.
+
+If the feature touches clinical content, med-device review applies (see `references/heidi-checklist.md` §4).
 
 ## 3. Where
 
